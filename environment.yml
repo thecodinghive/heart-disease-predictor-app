@@ -1,0 +1,6 @@
+name: flask-heart-disease
+dependencies:
+  - flask
+  - joblib
+  - scikit-learn
+  - numpy

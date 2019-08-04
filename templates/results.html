@@ -1,0 +1,39 @@
+{% extends 'layout.html' %}
+
+{% block title %}Heart Disease Prediction Results{% endblock %}
+
+{% block content %}
+Your results...
+
+  {% if prediction == 1 %}
+
+    <span class="icon is-large">
+      <i class="fas fa-stethoscope"></i>
+    </span>
+    You are going to die.
+  {% else %}
+    <span class="icon is-large">
+      <i class="fas fa-heart"></i>
+    </span>
+    You're safe.
+  {% endif %}
+
+  Probabilities:
+  OK: {{ probabilities[0] | round(3) }}
+  At Risk: {{ probabilities[1] | round(3) }}
+
+Input Values:
+
+<div class="field is-grouped is-grouped-multiline">
+
+{% for field, value in inputValues.items() %}
+  <div class="control">
+    <div class="tags has-addons are-large">
+      <span class="tag">{{ field }}</span>
+      <span class="tag is-dark">{{ value }}</span>
+    </div>
+  </div>
+{% endfor %}
+</div>
+
+{% endblock %}
