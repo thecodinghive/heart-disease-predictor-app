@@ -131,53 +131,6 @@ def process_form():
     return render_template('results.html', prediction=prediction["prediction"], probabilities=prediction["probabilities"], inputValues=inputValues)
 
 
-# @app.route('/predict', methods=["POST"])
-# def predict():
-#     if not valid_image_request():
-#         return jsonify({
-#             "success": False,
-#             "error": "You must provide a valid `image`."
-#         })
-
-#     image = request.files["image"].read()
-#     image = Image.open(io.BytesIO(image))
-#     image = prepare_image(image, target_size=(28, 28))
-
-#     # Image loading from https://towardsdatascience.com/deploying-keras-models-using-tensorflow-serving-and-flask-508ba00f1037
-
-#     # Decoding and pre-processing base64 image
-#     # img = image.img_to_array(image.load_img(BytesIO(base64.b64decode(request.form['b64'])),
-#     #                                         target_size=(224, 224))) / 255.
-#     # this line is added because of a bug in tf_serving(1.10.0-dev)
-#     # img = img.astype('float16')
-#     # img = ?
-#     # Pre-process the image.
-
-#     model = load_keras_model()
-
-#     # Returns an np array.. convert to list with .tolist()
-#     prediction_classes = model.predict_classes(image)
-
-#     # Displays probability for each number
-#     prediction_probabilities_list = model.predict(image).tolist()[0]
-#     prediction_probabilities = {}
-
-#     # Turn this into a dictionary of digit => probability
-#     prediction_probabilities = {}
-#     for num, p in enumerate(prediction_probabilities_list, start=0):
-#         prediction_probabilities[num] = format(p, ".5f")
-
-#     response = {
-#         "success": True,
-#         "prediction": prediction_classes.tolist(),
-#         "predictions": prediction_probabilities,
-#     }
-
-#     print(response)
-
-#     return jsonify(response)
-
-
 # if this is the main thread of execution, start the server
 if __name__ == "__main__":
     print("* Starting Flask server..."

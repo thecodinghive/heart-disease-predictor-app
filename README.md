@@ -16,7 +16,10 @@ Setup:
     # USe env
     conda activate flask-heart-disease
     # update env (e.g. after updating deps?)
+    conda env update --file environment.yml --prune
 
+
+# Running on Heroku
 
 
 
