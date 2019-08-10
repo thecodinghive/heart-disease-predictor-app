@@ -23,7 +23,7 @@ Setup:
 
 After installing new packages, make sure to update `requirements.txt`:
 
-    pip freeze > requirements.txt
+    conda list -e > requirements.txt
 
 The `Procfile` contains the command needed to run the app:
 
