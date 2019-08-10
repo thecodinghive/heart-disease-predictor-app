@@ -21,7 +21,36 @@ Setup:
 
 # Running on Heroku
 
+After installing new packages, make sure to update `requirements.txt`:
 
+    pip freeze > requirements.txt
+
+The `Procfile` contains the command needed to run the app:
+
+    web: gunicorn app:app --log-file -
+
+Install Heroku:
+
+* Visit https://devcenter.heroku.com/articles/getting-started-with-python#set-up
+* Install `git`, if you don't have it already.
+* Install `heroku`, following instructions for your platform.
+
+Next, we will need to setup our app on Heroku:
+
+* Create a free Heroku account.
+* Create a new application.
+* Run `heroku login` locally.
+* Follow instructions to deploy: https://dashboard.heroku.com/apps/coding-hive-heart-disease/deploy/heroku-git
+
+
+TODO: Try out this "Deploy to Heroku" button:
+- https://devcenter.heroku.com/articles/heroku-button
+
+
+References:
+
+* Heroku `Procfile` guide: https://devcenter.heroku.com/articles/procfile
+* https://xcitech.github.io/tutorials/heroku_tutorial/
 
 # Running on CoCalc
 
