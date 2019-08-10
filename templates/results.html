@@ -34,13 +34,13 @@
   {% endif %}
 
   <div class="back-button container has-text-centered">
-    <a class="button is-small is-text" href="{{ url_for('.form', **form_values) }}">
+    <a class="button is-small is-text" href=".{{ url_for('.form', **form_values) }}">
       <span class="icon">
         <i class="fas fa-edit"></i>
       </span>
       <span>Edit Values</span>
     </a>
-    <a class="button is-small is-text" href="{{ url_for('.form') }}">
+    <a class="button is-small is-text" href=".{{ url_for('.form') }}">
       <span class="icon">
         <i class="fas fa-undo"></i>
       </span>
