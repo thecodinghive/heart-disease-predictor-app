@@ -1,3 +1,4 @@
+nomkl
 certifi==2019.6.16
 Click==7.0
 Flask==1.1.1
@@ -6,6 +7,7 @@ itsdangerous==1.1.0
 Jinja2==2.10.1
 joblib==0.13.2
 MarkupSafe==1.1.1
+mkl-fft==1.0.12
 mkl-random==1.0.2
 mkl-service==2.0.2
 numpy==1.16.4
