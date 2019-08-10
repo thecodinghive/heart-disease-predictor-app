@@ -9,28 +9,16 @@ import io
 from sklearn.externals import joblib
 import numpy as np
 
-# #import required packages
-# import pandas as pd
-#
-# # will be used to split the data to train and test
-# from sklearn.model_selection import train_test_split
-# from sklearn import tree
-
-# from sklearn import metrics  # will be used to calculate assessment metrics
-# # will be used to compute confusion matrix and AUC
-# from sklearn.metrics import classification_report
-# # will be used to compute confusion matrix and AUC
-# from sklearn.metrics import confusion_matrix
-# import matplotlib.pyplot as plt  # will be used to generate ROC plot
-# import seaborn as sns  # will be used to generate confusion matrix
-
 app = Flask(__name__)
 model = None
 
-
+# Homepage: The heart health form
 @app.route('/')
 def form():
-    return render_template('form.html')
+    # Get the values if specified in the URL (so we can edit them)
+    values = request.values
+
+    return render_template('form.html', form_values=values)
 
 
 @app.errorhandler(Exception)
@@ -47,7 +35,7 @@ def load_model():
     global model
     # Only load model once
     if not model:
-        print("------------------------>>>> loading model...")
+        print("--->>>> loading model...")
         model = joblib.load("heart_classifier.pkl")
     return model
 
@@ -56,82 +44,90 @@ def valid_form_request():
     return request.method == "POST" and request.files.get("image")
 
 
-"""
-Calculates BMI given height (in kg), and weight (in cm)
-BMI Formula: kg / m^2
-Output is BMI, rounded to one decimal digit
-"""
+def calculate_bmi(height_cm, weight_kg):
+    """
+    Calculates BMI given height (in kg), and weight (in cm)
+    BMI Formula: kg / m^2
+    Output is BMI, rounded to one decimal digit
+    """
 
-
-def calculate_bmi(height, weight):
     # Input height is in cm, so we divide by 100 to convert to metres
-    return round(weight / ((height / 100) ** 2), 1)
-
-
-"""
-User our model to perform a prediction, given the input parameters.
-Note that input to model is an array with the following parameters:
-['ap_hi','ap_lo','age','cholesterol','bmi']
-
-[age, gender, height, weight, ap_hi, ap_lo, cholesterol, gluc, smoke, alco, active, bmi, bodyfat, lifestyle]
-e.g.:
-rf_model.predict([[48, 1, 165, 68, 110, 70, 0, 1, 0, 0, 1, 24.977043, 33.39809, 1]])
-    => array([0])
-    (or could be array([1]))
-rf_model.predict_proba([[48, 1, 165, 68, 110, 70, 0, 1, 0, 0, 1, 24.977043, 33.39809, 1]])
-    => array([[0.65566831, 0.34433169]])
-"""
+    height_m = height_cm / 100
+    return round(weight_kg / (height_m ** 2), 1)
 
 
 def predict(bp_high, bp_low, age, cholesterol, bmi):
+    """
+    User our model to perform a prediction, given the input parameters.
+    Note that input to model is a 2d array with the following parameters:
+        [['ap_hi','ap_lo','age','cholesterol','bmi']]
+    """
+
     classifier = load_model()
+    # Note that our classifier expects a 2D array
     model_params = [[bp_high, bp_low, age, cholesterol, bmi]]
     result = {
+        # classifier.predict returns an array containing the prediction
+        #   e.g. => [[0]]
         "prediction": classifier.predict(model_params)[0],
+        # classifier.predict_proba returns an array containing the probabilities of each class
+        #   e.g. => [[0.65566831, 0.34433169]]
         "probabilities": classifier.predict_proba(model_params)[0]
     }
     return result
 
 
+def get_form_values():
+    # https://stackoverflow.com/a/16664376/76710
+    form_values = {
+        'age': int(request.form['age']),
+        'bp_systolic': int(request.form['bp_systolic']),
+        'bp_diastolic': int(request.form['bp_diastolic']),
+        'weight_kg': float(request.form['weight_kg']),
+        'height_cm': float(request.form['height_cm']),
+        'cholesterol': int(request.form['cholesterol'])
+    }
+    return form_values
+
+
 @app.route('/process_form', methods=["POST"])
 def process_form():
-    error = False
-    if not valid_form_request():
-        error = True
+    # Error handling
+    # error = False
+    # if not valid_form_request():
+    #     error = True
 
-    age = int(request.form['age'])
-    bpSystolic = int(request.form['bpSystolic'])
-    bpDiastolic = int(request.form['bpDiastolic'])
-    weight = float(request.form['weight'])  # kg
-    height = float(request.form['height'])  # cm
-
-    bmi = calculate_bmi(weight, height)
+    values = get_form_values()
+    bmi = calculate_bmi(values['height_cm'], values['weight_kg'])
 
     # 0=Normal, 1=Above Normal, 2=Well Above Normal
-    cholesterol = int(request.form['cholesterol'])
-    cholesterolDescriptions = {
+    cholesterol_descriptions = {
         0: "Normal",
         1: "Above Normal",
         2: "Well Above Normal",
     }
 
     # These are the values that we will display on the results page
-    inputValues = {
-        "Age": age,
-        "Blood Pressure": "%s/%s" % (bpSystolic, bpDiastolic),
-        "Weight": "%s kg" % weight,
-        "Height": "%s cm" % height,
+    input_values = {
+        "Age": values['age'],
+        "Blood Pressure": "%s/%s" % (values['bp_systolic'], values['bp_diastolic']),
+        "Weight": "%s kg" % values['weight_kg'],
+        "Height": "%s cm" % values['height_cm'],
         "BMI": bmi,
-        "Cholesterol": cholesterolDescriptions[cholesterol]
+        "Cholesterol": cholesterol_descriptions[values['cholesterol']]
     }
 
-    prediction = predict(bpSystolic, bpDiastolic, age, cholesterol, bmi)
-    print(prediction)
+    prediction = predict(
+        values['bp_systolic'],
+        values['bp_diastolic'],
+        values['age'],
+        values['cholesterol'],
+        bmi
+    )
+    return render_template('results.html', prediction=prediction["prediction"], probabilities=prediction["probabilities"], input_values=input_values, form_values=values)
 
-    return render_template('results.html', prediction=prediction["prediction"], probabilities=prediction["probabilities"], inputValues=inputValues)
 
-
-# if this is the main thread of execution, start the server
+# Start the server
 if __name__ == "__main__":
     print("* Starting Flask server..."
           "please wait until server has fully started")

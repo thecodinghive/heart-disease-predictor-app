@@ -2,84 +2,62 @@
 
 {% block title %}Heart Disease Prediction Results{% endblock %}
 
-{% block head %}
-<style type="text/css">
-.results {
-  /* outline: 1px solid red; */
-  margin: 0 auto;
-  /* width: 100px; */
+{% block content %}
+<div class="results">
+  {% if prediction == 1 %}
+    <!-- Increased Risk Detected (> 50% probability) -->
+    <div class="results-main">
+      <div class="results-icon">
+        <i class="fas fa-stethoscope"></i>
+      </div>
+      <div class="results-pct">
+        {{ (probabilities[1] * 100) | round | int }}%
+      </div>
+    </div>
+    <div class="results-text notification is-danger">
+      Increased risk detected.
+      We recommend you speak to your doctor at your next visit.
+    </div>
+  {% else %}
+    <!-- Low Risk -->
+    <div class="results-main">
+      <div class="results-icon">
+        <i class="fas fa-heart"></i>
+      </div>
+      <div class="results-pct">
+        {{ (probabilities[1] * 100) | round | int }}%
+      </div>
+    </div>
+    <div class="results-text notification is-success">
+      Looking good! You are at low risk of heart disease.
+    </div>
+  {% endif %}
 
-}
-
-.results .results-main {
-  font-size: 190px;
-  display: flex;
-  justify-content: center;
-}
-
-.results .results-main .results-icon {
-  /* display: inline-block; */
-}
-.results .results-main .results-pct {
-  display: inline-block;
-  font-weight: bold;
-  margin-left: 20px;
-}
-.results .results-text {
-  text-align: center;
-}
-
-/* Center list of tags */
-.field.is-grouped {
-  justify-content: center;
-}
-</style>
+  <div class="back-button container has-text-centered">
+    <a class="button is-small is-text" href="{{ url_for('.form', **form_values) }}">
+      <span class="icon">
+        <i class="fas fa-edit"></i>
+      </span>
+      <span>Edit Values</span>
+    </a>
+    <a class="button is-small is-text" href="{{ url_for('.form') }}">
+      <span class="icon">
+        <i class="fas fa-undo"></i>
+      </span>
+      <span>Try Again</span>
+    </a>
+  </div>
+</div>
 {% endblock %}
 
-{% block content %}
-
-<section class="section">
-  <div class="container">
-
-    <div class="results">
-      {% if prediction == 1 %}
-        <div class="results-main">
-          <div class="results-icon">
-            <i class="fas fa-stethoscope"></i>
-          </div>
-          <div class="results-pct">
-            {{ (probabilities[1] * 100) | round | int }}%
-          </div>
-        </div>
-        <div class="results-text">
-          Increased risk detected.
-          We recommend you speak to your doctor at your next visit.
-        </div>
-      {% else %}
-        <div class="results-main">
-          <div class="results-icon">
-            <i class="fas fa-heart"></i>
-          </div>
-          <div class="results-pct">
-            {{ (probabilities[1] * 100) | round | int }}%
-          </div>
-        </div>
-        <div class="results-text">
-          Looking good! You are at low risk of heart disease.
-        </div>
-      {% endif %}
-    </div>
-  </div>
-</section>
-
-<section class="section">
-  <div class="container has-text-centered">
-    <div class="is-italic has-text-grey		">
+{% block footer %}
+<div class="container has-text-centered">
+  <div class="input-values">
+    <div class="is-italic has-text-grey">
       Input values:
     </div>
-    <br />
     <div class="field is-grouped is-grouped-multiline">
-      {% for field, value in inputValues.items() %}
+      {% for field, value in input_values.items() %}
         <div class="control">
           <div class="tags has-addons are-small">
             <span class="tag">{{ field }}</span>
@@ -88,7 +66,6 @@
         </div>
       {% endfor %}
     </div>
-
   </div>
-</section>
+</div>
 {% endblock %}
