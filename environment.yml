@@ -4,3 +4,4 @@ dependencies:
   - joblib
   - scikit-learn
   - numpy
+  - gunicorn
