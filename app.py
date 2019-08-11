@@ -46,30 +46,6 @@ def calculate_bmi(height_cm, weight_kg):
     return round(weight_kg / (height_m ** 2), 1)
 
 
-# def predict(bp_high, bp_low, age, cholesterol, bmi):
-#     """
-#     User our model to perform a prediction, given the input parameters.
-#     Note that input to model is a 2d array with the following parameters:
-#         [['ap_hi','ap_lo','age','cholesterol','bmi']]
-#     classifier.predict returns an array containing the prediction
-#        e.g. => [[0]]
-#     classifier.predict_proba returns an array containing the probabilities of each class
-#        e.g. => [[0.65566831, 0.34433169]]
-#     """
-
-#     classifier = load_model()
-#     model_params = [[bp_high, bp_low, age, cholesterol, bmi]]
-#     result = {
-#         "prediction": classifier.predict(model_params)[0],
-#         "probabilities": classifier.predict_proba(model_params)[0]
-#     }
-#     return result
-
-def values_for_display(values):
-    """
-    """
-
-
 @app.route('/process_form', methods=["POST"])
 def process_form():
     # Get the values that were submitted in the form, and
@@ -118,7 +94,13 @@ def process_form():
     ]]
 
     # Use our model to perform predictions
+
+    # model.predict returns an array containing the prediction
+    #    e.g. => [[0]]
     prediction = model.predict(model_params)[0]
+
+    # model.predict_proba returns an array containing the probabilities of each class
+    #    e.g. => [[0.65566831, 0.34433169]]
     probabilities = model.predict_proba(model_params)[0]
 
     return render_template('results.html', prediction=prediction, probabilities=probabilities, input_values=input_values, form_values=values)
