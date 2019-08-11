@@ -20,7 +20,7 @@ def load_model():
 
     global model
     if not model:
-        print("--->>>> loading model...")
+        # print("--->>>> loading model...")
         # TODO: Change the filename to match your model's filename
         model = joblib.load("heart_classifier.pkl")
     return model
@@ -72,7 +72,7 @@ def process_form():
         "Cholesterol": cholesterol_descriptions[values['cholesterol']]
     }
 
-    # Call the prediction
+    # Load the model & model params
     model = load_model()
     model_params = [[
         values['bp_systolic'],
