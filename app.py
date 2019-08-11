@@ -12,14 +12,6 @@ import numpy as np
 app = Flask(__name__)
 model = None
 
-# Homepage: The heart health form
-@app.route('/')
-def form():
-    # Get the values if specified in the URL (so we can edit them)
-    values = request.values
-
-    return render_template('form.html', form_values=values)
-
 
 def load_model():
     """
@@ -34,16 +26,13 @@ def load_model():
     return model
 
 
-def calculate_bmi(height_cm, weight_kg):
-    """
-    Calculates BMI given height (in kg), and weight (in cm)
-    BMI Formula: kg / m^2
-    Output is BMI, rounded to one decimal digit
-    """
+# Homepage: The heart health form
+@app.route('/')
+def form():
+    # Get the values if specified in the URL (so we can edit them)
+    values = request.values
 
-    # Input height is in cm, so we divide by 100 to convert to metres
-    height_m = height_cm / 100
-    return round(weight_kg / (height_m ** 2), 1)
+    return render_template('form.html', form_values=values)
 
 
 @app.route('/process_form', methods=["POST"])
@@ -104,6 +93,18 @@ def process_form():
     probabilities = model.predict_proba(model_params)[0]
 
     return render_template('results.html', prediction=prediction, probabilities=probabilities, input_values=input_values, form_values=values)
+
+
+def calculate_bmi(height_cm, weight_kg):
+    """
+    Calculates BMI given height (in kg), and weight (in cm)
+    BMI Formula: kg / m^2
+    Output is BMI, rounded to one decimal digit
+    """
+
+    # Input height is in cm, so we divide by 100 to convert to metres
+    height_m = height_cm / 100
+    return round(weight_kg / (height_m ** 2), 1)
 
 
 # Start the server
