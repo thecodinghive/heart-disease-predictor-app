@@ -7,3 +7,11 @@
 Click this button to deploy the app:
 
 [![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
+
+
+# Customize your app.
+
+Search for `TODO`:
+
+* [Change the app name in `templates/layout.html`](templates/layout.html:36)
+* [Change the model filename in `app.py`](app.py:32)

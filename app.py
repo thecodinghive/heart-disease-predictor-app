@@ -21,27 +21,17 @@ def form():
     return render_template('form.html', form_values=values)
 
 
-@app.errorhandler(Exception)
-def handle_error(e):
-    code = 500
-    if isinstance(e, HTTPException):
-        code = e.code
-    print("Error!", e)
-    print(traceback.format_exc())
-    return jsonify(error=str(e)), code
-
-
 def load_model():
+    """
+    This method loads our model, so that we can use it to perform predictions.
+    """
+
     global model
-    # Only load model once
     if not model:
         print("--->>>> loading model...")
+        # TODO: Change the filename to match your model's filename
         model = joblib.load("heart_classifier.pkl")
     return model
-
-
-def valid_form_request():
-    return request.method == "POST" and request.files.get("image")
 
 
 def calculate_bmi(height_cm, weight_kg):
@@ -56,30 +46,35 @@ def calculate_bmi(height_cm, weight_kg):
     return round(weight_kg / (height_m ** 2), 1)
 
 
-def predict(bp_high, bp_low, age, cholesterol, bmi):
+# def predict(bp_high, bp_low, age, cholesterol, bmi):
+#     """
+#     User our model to perform a prediction, given the input parameters.
+#     Note that input to model is a 2d array with the following parameters:
+#         [['ap_hi','ap_lo','age','cholesterol','bmi']]
+#     classifier.predict returns an array containing the prediction
+#        e.g. => [[0]]
+#     classifier.predict_proba returns an array containing the probabilities of each class
+#        e.g. => [[0.65566831, 0.34433169]]
+#     """
+
+#     classifier = load_model()
+#     model_params = [[bp_high, bp_low, age, cholesterol, bmi]]
+#     result = {
+#         "prediction": classifier.predict(model_params)[0],
+#         "probabilities": classifier.predict_proba(model_params)[0]
+#     }
+#     return result
+
+def values_for_display(values):
     """
-    User our model to perform a prediction, given the input parameters.
-    Note that input to model is a 2d array with the following parameters:
-        [['ap_hi','ap_lo','age','cholesterol','bmi']]
     """
 
-    classifier = load_model()
-    # Note that our classifier expects a 2D array
-    model_params = [[bp_high, bp_low, age, cholesterol, bmi]]
-    result = {
-        # classifier.predict returns an array containing the prediction
-        #   e.g. => [[0]]
-        "prediction": classifier.predict(model_params)[0],
-        # classifier.predict_proba returns an array containing the probabilities of each class
-        #   e.g. => [[0.65566831, 0.34433169]]
-        "probabilities": classifier.predict_proba(model_params)[0]
-    }
-    return result
 
-
-def get_form_values():
-    # https://stackoverflow.com/a/16664376/76710
-    form_values = {
+@app.route('/process_form', methods=["POST"])
+def process_form():
+    # Get the values that were submitted in the form, and
+    # convert them to correct numeric format (integer or floats)
+    values = {
         'age': int(request.form['age']),
         'bp_systolic': int(request.form['bp_systolic']),
         'bp_diastolic': int(request.form['bp_diastolic']),
@@ -87,19 +82,14 @@ def get_form_values():
         'height_cm': float(request.form['height_cm']),
         'cholesterol': int(request.form['cholesterol'])
     }
-    return form_values
 
-
-@app.route('/process_form', methods=["POST"])
-def process_form():
-    # Error handling
-    # error = False
-    # if not valid_form_request():
-    #     error = True
-
-    values = get_form_values()
+    # We do not have a BMI field on our form, but our model requires it.
+    # We can calculate BMI using height and weight.
     bmi = calculate_bmi(values['height_cm'], values['weight_kg'])
 
+    # This is a dictionary of the values that our model expects, as well
+    # as a human-readable description of what each value means, so we can
+    # display this to the user.
     # 0=Normal, 1=Above Normal, 2=Well Above Normal
     cholesterol_descriptions = {
         0: "Normal",
@@ -117,14 +107,21 @@ def process_form():
         "Cholesterol": cholesterol_descriptions[values['cholesterol']]
     }
 
-    prediction = predict(
+    # Call the prediction
+    model = load_model()
+    model_params = [[
         values['bp_systolic'],
         values['bp_diastolic'],
         values['age'],
         values['cholesterol'],
         bmi
-    )
-    return render_template('results.html', prediction=prediction["prediction"], probabilities=prediction["probabilities"], input_values=input_values, form_values=values)
+    ]]
+
+    # Use our model to perform predictions
+    prediction = model.predict(model_params)[0]
+    probabilities = model.predict_proba(model_params)[0]
+
+    return render_template('results.html', prediction=prediction, probabilities=probabilities, input_values=input_values, form_values=values)
 
 
 # Start the server
