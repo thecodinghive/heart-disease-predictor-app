@@ -11,7 +11,7 @@ Click this button to deploy the app:
 
 # Customize your app.
 
-Search for `TODO`:
+Search the code for `TODO`:
 
-* [Change the app name in `templates/layout.html`](templates/layout.html:36)
-* [Change the model filename in `app.py`](app.py:32)
+* [Change the app name in `templates/layout.html`](templates/layout.html)
+* [Change the model filename in `app.py`](app.py)
