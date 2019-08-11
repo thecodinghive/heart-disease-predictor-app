@@ -1,15 +1,8 @@
-TODO: This readme was copied from the digit identifier. Update with new instructions specific to heart disease model.
-
-TODO: Livereload would be nice too (though optional...)
-    https://livereload.readthedocs.io/en/latest/
-
 Run using:
 
     python3 app.py
 
 Setup:
-
-* TODO: Setup dependencies via conda.
 
     # Initial env creation
     conda env create -f environment.yml
@@ -17,6 +10,17 @@ Setup:
     conda activate flask-heart-disease
     # update env (e.g. after updating deps?)
     conda env update --file environment.yml --prune
+
+
+# Running on Heroku: Deploy
+
+* Create a free Heroku account: https://signup.heroku.com/
+* Visit the Github repo: https://github.com/thecodinghive/heart-disease-predictor-app
+* Optional: Create or use existing Github account to fork this repository, so that you can edit the app & upload your own model.
+
+Click this button to deploy the app:
+
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy)
 
 
 # Running on Heroku
@@ -42,11 +46,6 @@ Next, we will need to setup our app on Heroku:
 * Run `heroku login` locally.
 * Follow instructions to deploy: https://dashboard.heroku.com/apps/coding-hive-heart-disease/deploy/heroku-git
 
-
-TODO: Try out this "Deploy to Heroku" button:
-- https://devcenter.heroku.com/articles/heroku-button
-
-
 References:
 
 * Heroku `Procfile` guide: https://devcenter.heroku.com/articles/procfile
@@ -57,7 +56,7 @@ References:
 * Running server via terminal: https://doc.cocalc.com/howto/webserver.html
 * Command: `gunicorn -b 0.0.0.0:5000 app:app --log-file -`
 * Then access at: `https://cocalc.com/<project_id>/server/5000/`
-* NOTE: Replace `<project_id>` with your project ID, e.g. `https://cocalc.com/cfca8905-cec9-4b44-b37e-33f41dcc8068/server/5000/`. You can get this from the URL.
+* NOTE: Replace `<project_id>` with your project ID, e.g. `https://cocalc.com/cfca8905-cec9-4b44-b37e-33f41dcc8068/server/5000/`. You can get this from the URL when browsing the project in cocalc.
 
 
 
